@@ -1,0 +1,36 @@
+const { $, expect } = require('@wdio/globals')
+const Page = require('./page');
+
+// const errorLockedOutUser = (dynamicMessage) => $(`//h3[text()="${dynamicMessage}"]`)
+// get fieldUsername () { return $('#user-name'); }
+// get fieldPassword () { return $('#password'); }
+// get buttonLogin () { return $('#login-button'); } 
+
+const elements = {
+    fieldUsername : $('#user-name'),
+    fieldPassword : $('#password'),
+    buttonLogin : $('#login-button'),
+    errorLockedOutUser : (dynamicMessage) => $(`//h3[text()="${dynamicMessage}"]`)
+}
+
+class LoginPage extends Page {
+    // NOTE: elements collection
+
+    async login (username) {
+        await elements.fieldUsername.waitForDisplayed({ timeout: 2500 });
+        await elements.fieldUsername.setValue(username);
+        await elements.fieldPassword.setValue(process.env.PASSWORD_SAUCEDEMO);
+        await elements.buttonLogin.click();
+    }
+
+    async validateLockedOutUserError (dynamicMessage) {
+        await elements.errorLockedOutUser(dynamicMessage).waitForDisplayed({ timeout: 2500 });
+        await expect(elements.errorLockedOutUser(dynamicMessage)).toBeDisplayed()
+    }
+
+    open () {
+        return super.open('/'); // NOTE: will open https://www.saucedemo.com/
+    }
+}
+
+module.exports = new LoginPage();
